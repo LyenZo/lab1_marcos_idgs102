@@ -1,59 +1,44 @@
-variable "length" {
-  description = "The length of the string"
-  type        = number
-  default    = 5
-}
-
-variable "application_name" {
-  description = "The name of the application"
+variable "project_name" {
+  description = "The name of the project."
   type        = string
-  default     = "integradora"
+
+  validation {
+    condition     = length(var.project_name) >= 3 && length(var.project_name) <= 20
+    error_message = "Debe contener entre 3 y 20 caracteres."
+  }
 }
 
 variable "environment" {
-  description = "The environment name"
+  description = "Ambiente donde se despliegan los recursos."
   type        = string
-  default     = "dev"
+
+  validation {
+    condition     = contains(["dev", "test", "qa", "stg", "prod"], var.environment)
+    error_message = "El entorno debe ser 'dev', 'test', 'qa', 'stg' o 'prod'."
+  }
 }
 
-variable "enable_monitoring" {
-  description = "Enable monitoring for the application"
-  type        = bool
-  default     = true
+variable "location" {
+  description = "La ubicación geográfica donde se desplegarán los recursos."
+  type        = string
+  default     = "northcentralus" 
+
+  validation {
+    condition     = contains(["eastus", "westus", "centralus", "northeurope", "westeurope", "mexicocentral", "southcentralus", "eastus2", "northcentralus"], var.location)
+    error_message = "Ubicación no válida."
+  }
 }
 
-variable "regions" {
-  description = "List of regions to deploy the application"
+variable "vnet_address_space" {
+  description = "El espacio de direcciones para la red virtual."
   type        = list(string)
-  default     = ["us-east-1", "us-west-2"]
+  default     = ["10.0.0.0/16"]
 }
 
-variable "enviroment_tags" {
-  description = "Tags for the environment"
+variable "tags" {
+  description = "Etiquetas para los recursos."
   type        = map(string)
   default     = {
-    dev       = "Development"
-    prod = "Production"
+    managed_by = "Terraform"
   }
-}
-
-variable "application_config" {
-  description = "Configuration for the application"
-  type        = object({
-    version = string
-    maintainer = string
-    dependencies = list(string)
-  })
-  default     = {
-    version = "1.0.0"
-    maintainer = "John Doe"
-    dependencies = ["dependency1", "dependency2"]
-  }
-}
-
-variable "allowed_networks" {
-  description = "Lista de redes permitidas para acceder a la aplicación"
-  type        = list(string)
-  default     = ["10.0.0.0/16","10.1.0.0/16"]
-
 }
